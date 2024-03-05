@@ -1,0 +1,43 @@
+.homeSection {
+    padding: 60px 20px;
+    min-height: 100vh;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    color: #FFFFFF; /* White text for readability */
+  }
+  
+  .profileImage {
+    border-radius: 50%;
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 20px; /* Add some space below the profile image */
+  }
+  
+  .socialLinks {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Space between icons */
+  }
+  
+  .socialIcon {
+    width: 50px;
+    height: auto;
+  }
+
+.welcomeMessage {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+    color: #000; /* Black color */
+  }
+  
+  .welcomeText {
+    font-size: 1.2em;
+    margin-bottom: 1em;
+    color: #000; /* Black color */
+  }
+  
+  
