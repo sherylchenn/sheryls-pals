@@ -1,4 +1,4 @@
-import React from "react";
+/* import React from "react";
 import { Box, Flex, Image, Text, VStack } from "@chakra-ui/react";
 
 // Dummy data for books, with updated image paths
@@ -65,3 +65,4 @@ const Library = () => {
 };
 
 export default Library;
+ */

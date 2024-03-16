@@ -1,4 +1,4 @@
-import React from 'react';
+/* import React from 'react';
 import { Box, Flex, Image, Text, VStack, Link as ChakraLink } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
@@ -33,3 +33,4 @@ const BlogList = () => {
 };
 
 export default BlogList;
+ */

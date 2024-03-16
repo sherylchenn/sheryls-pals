@@ -1,73 +1,102 @@
-import React from "react";
-import { Box, Flex, Image, Text, Stack, Link } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
+import { auth, db } from "../firebase-config";
+import {
+  Box,
+  SimpleGrid,
+  Heading,
+  Text,
+  IconButton,
+  useToast,
+  Flex,
+  Icon
+} from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
 
-const SectionHome = () => (
-  <Box textAlign="center" p={4}>
-    <Stack
-      direction={{ base: "column", md: "row" }}
-      spacing={4}
-      justify="center"
-    >
-      <Flex
-      direction={{ base: "column", md: "row" }} // Stack on small screens, horizontal on medium screens and up
-      align="center"
-      maxW="4xl"
-      mx="auto"
-      px={5}
-      py={0}
-      gap={5} // Add some space between the text and the image
-    >
-      <Box flex="1" textAlign={{ base: "center", md: "left" }}>
-        <Text fontSize="2xl" fontWeight="bold">
-          Hi, I'm Sheryl.
-        </Text>
-        <Text fontSize="md">
-          I’m a first-year student studying Computer Science at Stanford
-          University. The past year, I have been on a learning journey to know
-          myself and hone in on what matters to me. Join me in this
-          celebration of life and appreciation of all things good!
-        </Text>
-        {/* Add more Text components or other content as needed */}
-      </Box>
-      <Box
-        flex="1"
-        display="flex" // Ensure the image is centered within the box
-        justifyContent={{ base: "center", md: "flex-start" }} // Center on base, align left on md
+function SectionHome({ isAuth }) {
+  const [postLists, setPostList] = useState([]);
+  const postsCollectionRef = collection(db, "posts");
+  const toast = useToast();
+
+  useEffect(() => {
+    const getPosts = async () => {
+      const data = await getDocs(postsCollectionRef);
+      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+
+    getPosts();
+  }, []);
+
+  const deletePost = async (id) => {
+    const postDoc = doc(db, "posts", id);
+    await deleteDoc(postDoc);
+    toast({
+      title: "Post deleted.",
+      description: "Your post has been removed.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+    setPostList(postLists.filter((post) => post.id !== id));
+  };
+
+  const categoryColors = {
+    School: "green.100",      // A light green color
+    Internships: "blue.100",  // A light blue color
+    "Self-care": "yellow.100",// A light yellow color
+    Hobbies: "purple.100",    // A light purple color
+    Tech: "red.100",          // A light red color
+    Sports: "orange.100",     // A light orange color
+    Uncategorized: "gray.100",// A light gray color
+  };
+  
+  
+  const getCategoryColor = (category) => categoryColors[category.toLowerCase()] || "pastel.gray";
+  
+  return (
+    <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={5} p={5}>
+      {postLists.map((post) => (
+        <Box
+        key={post.id}
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="hidden"
+        p={5}
+        shadow="md"
+        bg={categoryColors[post.category] || "gray.100"} // Default to gray.100 if category is not in the map
+        fontFamily="Inconsolata, monospace"
       >
-        <Image
-          src={`${process.env.PUBLIC_URL}/styles/images/Home/profile_pic.jpg`} // Ensure the path is correct
-          alt="Profile"
-          boxSize="150px"
-          borderRadius="full"
-        />
-      </Box>
-    </Flex>
-      {/* <Link href="https://github.com/sherylchen" isExternal>
-        <Image
-          src={`${process.env.PUBLIC_URL}/styles/images/Home/github_icon.png`} // Updated path
-          alt="GitHub"
-          boxSize="40px"
-        />
-      </Link>
-      <Link
-        href="https://www.linkedin.com/in/sheryl-chen-489b892a1/"
-        isExternal
-      >
-        <Image
-          src={`${process.env.PUBLIC_URL}/styles/images/Home/linkedin_icon.png`} // Updated path
-          alt="LinkedIn"
-          boxSize="40px"
-        />
-      </Link>
-      <Link href="mailto:sherylcanfly@gmail.com">
-        <Image
-          src={`${process.env.PUBLIC_URL}/styles/images/Home/email_icon.jpg`} // Updated path
-          alt="Email"
-          boxSize="40px"
-        />
-      </Link> */}
-    </Stack>
-  </Box>
-);
+          <Heading
+            size="lg"
+            fontFamily="Karla, sans-serif"
+            color="black"
+            mb={4}
+          >
+            {post.title}
+          </Heading>
+          <Text color="black" mb={4}>
+            {post.postText}
+          </Text>
+          <Flex justify="space-between" align="center">
+            <Text fontSize="sm" color="black" fontWeight="bold">
+              @{post.author.name}
+            </Text>
+            {isAuth && post.author.id === auth.currentUser.uid && (
+              <Icon
+                as={DeleteIcon}
+                color="white"
+                w={6}
+                h={6}
+                onClick={() => deletePost(post.id)}
+                cursor="pointer"
+                _hover={{ color: "red.500" }} // Optional: change icon color on hover
+              />
+            )}
+          </Flex>
+        </Box>
+      ))}
+    </SimpleGrid>
+  );
+}
 
 export default SectionHome;
