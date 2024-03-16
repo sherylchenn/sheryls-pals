@@ -1,21 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase-config";
+import React, { useEffect, useState } from "react";
+import { collection, query, where, getDocs, doc, deleteDoc } from "firebase/firestore"; // Imported doc and deleteDoc
+import { auth, db } from "../firebase-config";
 import {
   Box,
   SimpleGrid,
   Heading,
   Text,
-  IconButton,
-  useToast,
+  useToast, // Make sure to import useToast
   Flex,
   Icon
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 
 function HobbiesPage() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // Corrected from setPostList to setPosts
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
+  const toast = useToast(); // Initialized useToast hook to get toast function
+
+  const deletePost = async (id) => {
+    const postDoc = doc(db, "posts", id);
+    await deleteDoc(postDoc);
+    toast({
+      title: "Post deleted.",
+      description: "Your post has been removed.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+    setPosts(posts.filter((post) => post.id !== id)); // Corrected from postLists to posts
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
