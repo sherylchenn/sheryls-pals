@@ -15,15 +15,35 @@ import { DeleteIcon } from "@chakra-ui/icons";
 
 function HobbiesPage() {
   const [posts, setPosts] = useState([]);
+  const [isUserAuthorized, setIsUserAuthorized] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const q = query(collection(db, "posts"), where("category", "==", "Hobbies"));
+      const q = query(
+        collection(db, "posts"),
+        where("category", "==", "Hobbies")
+      );
       const querySnapshot = await getDocs(q);
-      setPosts(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setPosts(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
     };
 
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    // Replace this logic with the actual check for the user's role or privileges
+    const checkUserAuthorization = () => {
+      const user = auth.currentUser;
+      if (user) {
+        // For example, we check if the user has a role of 'admin' in their profile
+        // You might check a different condition based on your app's auth logic
+        setIsUserAuthorized(user.role === 'admin');
+      }
+    };
+
+    checkUserAuthorization();
   }, []);
 
   const categoryColors = {
