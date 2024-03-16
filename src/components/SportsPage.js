@@ -61,14 +61,17 @@ function SportsPage() {
               </Text>
             </Box>
             {/* Ensure the delete icon is only shown to authorized users */}
-            <Icon
-              as={DeleteIcon}
-              color="pink.500" // Pink color for the delete icon, adjust as needed
-              w={6}
-              h={6}
-              cursor="pointer"
-              _hover={{ color: "pink.600" }} // Adjust hover color as needed
-            />
+            {isUserAuthorized && (
+              <Icon
+                as={DeleteIcon}
+                color="pink.500" // Pink color for the delete icon, adjust as needed
+                w={6}
+                h={6}
+                onClick={() => deletePost(post.id)}
+                cursor="pointer"
+                _hover={{ color: "red.500" }} // Optional: change icon color on hover
+              />
+            )}
           </Flex>
           <Text fontSize="sm" fontWeight="bold" color="black">
             @{post.author.name}
