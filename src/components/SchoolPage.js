@@ -1,7 +1,7 @@
 // SchoolPage.js
 import React, { useState, useEffect } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "/Users/sherylchen/personalsite/src/firebase-config";
+import { db } from "../firebase-config";
 import {
   Box,
   SimpleGrid,

@@ -1,5 +1,5 @@
 import React from "react";
-import { auth, provider, db } from '/Users/sherylchen/personalsite/src/firebase-config';
+import { auth, provider, db } from "../firebase-config";
 import { signInWithPopup } from 'firebase/auth';
 import { getDoc, doc } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
