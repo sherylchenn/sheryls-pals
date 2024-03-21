@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import anime from 'animejs/lib/anime.es.js';
 import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import {
@@ -12,20 +13,14 @@ import {
   Icon
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
+import TestAnimation from './TestAnimation'; // Adjust the path based on your file structure
+
 
 function SectionHome({ isAuth }) {
   const [postLists, setPostList] = useState([]);
   const postsCollectionRef = collection(db, "posts");
   const toast = useToast();
-
-  useEffect(() => {
-    const getPosts = async () => {
-      const data = await getDocs(postsCollectionRef);
-      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-
-    getPosts();
-  }, []);
+  const postsRef = useRef(null);
 
   const deletePost = async (id) => {
     const postDoc = doc(db, "posts", id);
@@ -40,30 +35,62 @@ function SectionHome({ isAuth }) {
     setPostList(postLists.filter((post) => post.id !== id));
   };
 
-  const categoryColors = {
-    School: "green.100",      // A light green color
-    Internships: "blue.100",  // A light blue color
-    "Self-care": "yellow.100",// A light yellow color
-    Hobbies: "purple.100",    // A light purple color
-    Tech: "red.100",          // A light red color
-    Sports: "orange.100",     // A light orange color
-    Uncategorized: "gray.100",// A light gray color
+  // Hover effect for delete icon
+  const hoverEffect = (e) => {
+    anime({
+      targets: e.currentTarget,
+      scale: 1.2,
+      duration: 300
+    });
   };
-  
-  
-  const getCategoryColor = (category) => categoryColors[category.toLowerCase()] || "pastel.gray";
+
+  const leaveEffect = (e) => {
+    anime({
+      targets: e.currentTarget,
+      scale: 1,
+      duration: 300
+    });
+  };
+
+  useEffect(() => {
+    const getPosts = async () => {
+      const data = await getDocs(postsCollectionRef);
+      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+
+    getPosts();
+  }, []);
+
+  useEffect(() => {
+    if (postLists.length > 0) {
+      requestAnimationFrame(() => {
+        anime({
+          targets: '.post',
+          translateY: [50, 0],
+          opacity: [0, 1],
+          delay: anime.stagger(100),
+          easing: 'easeOutQuad',
+        });
+      });
+    }
+  }, [postLists]);
+
   
   return (
+    <>
+    <TestAnimation />
+   
     <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={5} p={5}>
       {postLists.map((post) => (
         <Box
+        className="post" // Add class for targeting by Anime.js
         key={post.id}
         borderWidth="1px"
         borderRadius="lg"
         overflow="hidden"
         p={5}
         shadow="md"
-        bg={categoryColors[post.category] || "gray.100"} // Default to gray.100 if category is not in the map
+        bg={categoryColors[post.category] || "gray.100"}
         fontFamily="Inconsolata, monospace"
       >
           <Heading
@@ -88,14 +115,17 @@ function SectionHome({ isAuth }) {
                 w={6}
                 h={6}
                 onClick={() => deletePost(post.id)}
+                onMouseEnter={hoverEffect}
+                onMouseLeave={leaveEffect}
                 cursor="pointer"
-                _hover={{ color: "red.500" }} // Optional: change icon color on hover
+                _hover={{ color: "red.500" }}
               />
             )}
           </Flex>
         </Box>
       ))}
     </SimpleGrid>
+    </>
   );
 }
 

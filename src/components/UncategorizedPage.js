@@ -83,6 +83,7 @@ function UncategorizedPage() {
           shadow="md"
           bg={categoryColors["Uncategorized"]} 
           fontFamily="Inconsolata, monospace"
+         
         >
           <Flex justify="space-between" align="center">
             <Box flex="1">
