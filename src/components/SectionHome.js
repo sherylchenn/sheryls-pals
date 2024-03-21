@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import anime from 'animejs/lib/anime.es.js';
+import anime from 'animejs';
 import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import {
@@ -13,14 +13,23 @@ import {
   Icon
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
-import TestAnimation from './TestAnimation'; // Adjust the path based on your file structure
-
 
 function SectionHome({ isAuth }) {
   const [postLists, setPostList] = useState([]);
   const postsCollectionRef = collection(db, "posts");
   const toast = useToast();
   const postsRef = useRef(null);
+  const welcomeRef = useRef(null);
+
+  const categoryColors = {
+    School: "green.100",
+    Internships: "blue.100",
+    "Self-care": "yellow.100",
+    Hobbies: "purple.100",
+    Tech: "red.100",
+    Sports: "orange.100",
+    Uncategorized: "gray.100",
+  };
 
   const deletePost = async (id) => {
     const postDoc = doc(db, "posts", id);
@@ -75,11 +84,22 @@ function SectionHome({ isAuth }) {
     }
   }, [postLists]);
 
+  useEffect(() => {
+    anime({
+      targets: welcomeRef.current,
+      translateY: [-100, 0], // Change this as needed
+      opacity: [0, 1],
+      easing: 'easeOutExpo',
+      duration: 2000,
+    });
+  }, []);
+
   
   return (
     <>
-    <TestAnimation />
-   
+    <Box ref={welcomeRef} p={5} textAlign="center" fontSize="xl">
+      Welcome to Sheryl’s Pals! Here, we give musings and advice about school, career, tech and anything that has been on our minds.
+    </Box>
     <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={5} p={5}>
       {postLists.map((post) => (
         <Box
