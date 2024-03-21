@@ -1,37 +1,44 @@
 import { useState, useEffect, useRef } from 'react';
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import anime from 'animejs';
 import { useToast } from "@chakra-ui/react";
 import { db, auth } from "../firebase-config";
 
-const usePosts = () => {
+const usePosts = (category) => {
   const [posts, setPosts] = useState([]);
   const toast = useToast();
   const welcomeRef = useRef(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const postsCollectionRef = collection(db, "posts");
-      const data = await getDocs(postsCollectionRef);
+      let queryRef = collection(db, "posts");
+      if (category) {
+        queryRef = query(queryRef, where("category", "==", category));
+      }
+      const data = await getDocs(queryRef); // Use the filtered queryRef here
       setPosts(data.docs.map(doc => ({ ...doc.data(), id: doc.id })));
     };
+    
 
     fetchPosts();
-  }, []);
+  }, [category]);
+
 
   useEffect(() => {
+    console.log(posts);
     if (posts.length > 0) {
-      requestAnimationFrame(() => {
-        anime({
-          targets: '.post',
-          translateY: [50, 0],
-          opacity: [0, 1],
-          delay: anime.stagger(100),
-          easing: 'easeOutQuad',
-        });
+      anime({
+        targets: '.post',
+        translateY: [50, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(100),
+        easing: 'easeOutQuad',
       });
     }
   }, [posts]);
+  
+  
+
 
   useEffect(() => {
     anime({
