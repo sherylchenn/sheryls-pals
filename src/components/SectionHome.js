@@ -1,13 +1,14 @@
 import React from 'react';
 import {
-  Box, SimpleGrid, Heading, Text, Flex, Icon
+  Box, SimpleGrid, Heading, Text, Flex, Icon, IconButton
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { auth } from "../firebase-config";
 import usePosts from '../hooks/usePosts';
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // Assuming you're using react-icons
 
 function SectionHome({ isAuth }) {
-  const { posts, deletePost, hoverEffect, leaveEffect, welcomeRef } = usePosts();
+  const { posts, deletePost, hoverEffect, leaveEffect, likePost, likedPosts } = usePosts();
 
   const categoryColors = {
     School: "green.100",
@@ -21,7 +22,7 @@ function SectionHome({ isAuth }) {
 
   return (
     <>
-      <Box ref={welcomeRef} p={5} textAlign="center" fontSize="xl">
+      <Box p={5} textAlign="center" fontSize="xl">
         Welcome to Sheryl’s Pals! Here, we give musings and advice about school, career, tech and anything that has been on our minds.
       </Box>
       <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={5} p={5}>
@@ -52,6 +53,14 @@ function SectionHome({ isAuth }) {
               <Text fontSize="sm" color="black" fontWeight="bold">
                 @{post.author.name}
               </Text>
+              <Flex align="center">
+                <IconButton
+                  aria-label="Like post"
+                  icon={likedPosts && likedPosts.includes(post.id) ? <AiFillHeart /> : <AiOutlineHeart />}
+                  onClick={() => likePost(post.id)}
+                />
+                <Text ml={2}>{post.likes || 0}</Text>
+              </Flex>
               {isAuth && post.author.id === auth.currentUser.uid && (
                 <Icon
                   as={DeleteIcon}
