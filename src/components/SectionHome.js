@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box, SimpleGrid, Heading, Text, Flex, IconButton
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { auth } from "../firebase-config";
 import usePosts from '../hooks/usePosts';
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // Assuming you're using react-icons
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import anime from 'animejs/lib/anime.es.js'; // Make sure animejs is installed and imported correctly
 
 function SectionHome({ isAuth }) {
   const { posts, deletePost, hoverEffect, leaveEffect, likePost, likedPosts } = usePosts();
@@ -22,11 +23,38 @@ function SectionHome({ isAuth }) {
 
   const isPostLikedByUser = (postId) => likedPosts.includes(postId);
 
+  useEffect(() => {
+    anime({
+      targets: '.welcome-message',
+      translateY: [-20, 0], // Slightly move up to down
+      opacity: [0, 1],
+      easing: 'easeOutExpo',
+      duration: 1000,
+      delay: 500,
+    });
+  }, []);
+
   return (
     <>
-      <Box p={5} textAlign="center" fontSize="xl">
-        Welcome to Sheryl’s Pals! Here, we give musings and advice about school, career, tech and anything that has been on our minds.
-      </Box>
+      <Box
+  className="welcome-message"
+  borderWidth="1px"
+  borderRadius="lg"
+  overflow="hidden"
+  p={5}
+  shadow="md"
+  bg="teal.100" // Changed background color to a teal shade for distinction
+  m={5}
+  mt={10} // Added more margin-top for spacing from the top of the page
+  textAlign="center"
+  fontSize="xl"
+  fontFamily="Inconsolata, monospace"
+  maxWidth="800px" // Control the maximum width of the box
+  mx="auto" // Center the box by setting the left and right margin to auto
+>
+  Welcome to Sheryl’s Pals! Here, we give musings and advice about school, career, tech, and anything that has been on our minds.
+</Box>
+
       <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={5} p={5}>
         {posts.map((post) => (
           <Box
@@ -43,8 +71,8 @@ function SectionHome({ isAuth }) {
             <Heading
               size="lg"
               fontFamily="Karla, sans-serif"
-              color="black"
               mb={4}
+              color="black"
             >
               {post.title}
             </Heading>
@@ -66,14 +94,13 @@ function SectionHome({ isAuth }) {
               </Flex>
               {isAuth && post.author.id === auth.currentUser.uid && (
                 <DeleteIcon
-                  color="white"
+                  color="red.500"
                   w={6}
                   h={6}
                   onClick={() => deletePost(post.id)}
                   onMouseEnter={hoverEffect}
                   onMouseLeave={leaveEffect}
                   cursor="pointer"
-                  _hover={{ color: "red.500" }}
                 />
               )}
             </Flex>
