@@ -1,12 +1,11 @@
 import React from 'react';
-import { Box, SimpleGrid, Heading, Text, Flex, Icon } from "@chakra-ui/react";
-import { DeleteIcon } from "@chakra-ui/icons";
-import { auth } from "../firebase-config";
+import { Box, SimpleGrid, Heading, Text, Flex, IconButton } from "@chakra-ui/react";
 import usePosts from '../hooks/usePosts'; // Ensure this path is correct
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // Confirm you're using react-icons
 
-function SchoolPage({ isAuth }) {
+function SchoolPage() {
   // Use the usePosts hook with 'School' category
-  const { posts, deletePost, welcomeRef } = usePosts('School');
+  const { posts, likePost, likedPosts } = usePosts('School');
 
   const categoryColors = {
     School: "green.100",
@@ -18,50 +17,53 @@ function SchoolPage({ isAuth }) {
     Uncategorized: "gray.100",
   };
 
+  // Function to check if a post is liked by the user
+  const isPostLikedByUser = (postId) => likedPosts.includes(postId);
+
   return (
     <>
-      <Box ref={welcomeRef} p={5} textAlign="center" fontSize="xl">
-        School 
+      <Box p={5} textAlign="center" fontSize="xl">
+        School
       </Box>
       <SimpleGrid columns={{ sm: 1, md: 2, lg: 3 }} spacing={5} p={5}>
-        {posts.map((post) => (
-          <Box
-            className="post" // Ensure this matches the target in your animejs effects
-            key={post.id}
-            borderWidth="1px"
-            borderRadius="lg"
-            overflow="hidden"
-            p={5}
-            shadow="md"
-            bg={categoryColors[post.category] || "gray.100"}
-          >
-            <Heading size="lg" fontFamily="Karla, sans-serif" mb={2} color="black">
-              {post.title}
-            </Heading>
-            <Text color="black" mb={4}>
-              {post.postText}
-            </Text>
-            <Flex justify="space-between" align="center">
-              <Text fontSize="sm" fontWeight="bold" color="black">
-                @{post.author.name}
-              </Text>
-              {isAuth && post.author.id === auth.currentUser.uid && (
-                <Icon
-                  as={DeleteIcon}
-                  color="white"
-                  w={6}
-                  h={6}
-                  onClick={() => deletePost(post.id)}
-                  cursor="pointer"
-                  _hover={{ color: "red.500" }}
-                />
-              )}
-            </Flex>
-          </Box>
-        ))}
+      {posts.map((post) => (
+  <Box
+    key={post.id}
+    borderWidth="1px"
+    borderRadius="lg"
+    overflow="hidden"
+    p={5}
+    shadow="md"
+    bg={categoryColors[post.category] || "gray.100"}
+  >
+    <Heading size="lg" fontFamily="Karla, sans-serif" mb={2} color="black">
+      {post.title}
+    </Heading>
+    <Text color="black" mb={4}>
+      {post.postText}
+    </Text>
+    <Flex justify="space-between" align="center">
+      <Text fontSize="sm" fontWeight="bold" color="black">
+        @{post.author.name}
+      </Text>
+      <Flex align="center">
+        <IconButton
+          aria-label="Like post"
+          icon={isPostLikedByUser(post.id) ? <AiFillHeart color="pink" /> : <AiOutlineHeart />}
+          onClick={() => likePost(post.id)}
+          variant="unstyled"
+        />
+        {/* Display the like count here */}
+        <Text ml={2}>{post.likes || 0}</Text>
+      </Flex>
+    </Flex>
+  </Box>
+))}
+
       </SimpleGrid>
     </>
   );
 }
 
 export default SchoolPage;
+

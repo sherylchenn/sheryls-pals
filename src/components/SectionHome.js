@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Box, SimpleGrid, Heading, Text, Flex, Icon, IconButton
+  Box, SimpleGrid, Heading, Text, Flex, IconButton
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { auth } from "../firebase-config";
@@ -19,6 +19,8 @@ function SectionHome({ isAuth }) {
     Sports: "orange.100",
     Uncategorized: "gray.100",
   };
+
+  const isPostLikedByUser = (postId) => likedPosts.includes(postId);
 
   return (
     <>
@@ -56,14 +58,14 @@ function SectionHome({ isAuth }) {
               <Flex align="center">
                 <IconButton
                   aria-label="Like post"
-                  icon={likedPosts && likedPosts.includes(post.id) ? <AiFillHeart /> : <AiOutlineHeart />}
+                  icon={isPostLikedByUser(post.id) ? <AiFillHeart color="pink" /> : <AiOutlineHeart />}
                   onClick={() => likePost(post.id)}
+                  variant="unstyled"
                 />
                 <Text ml={2}>{post.likes || 0}</Text>
               </Flex>
               {isAuth && post.author.id === auth.currentUser.uid && (
-                <Icon
-                  as={DeleteIcon}
+                <DeleteIcon
                   color="white"
                   w={6}
                   h={6}
